@@ -1,0 +1,36 @@
+# Constraint for Product nodes
+CREATE CONSTRAINT product_asin IF NOT EXISTS
+FOR (p:Product)
+REQUIRE p.asin IS UNIQUE;
+
+# Load amazon_products_for_neo.csv
+LOAD CSV WITH HEADERS
+FROM 'file:///amazon_products_for_neo.csv' AS row
+CREATE (p:Product {
+  asin: row.asin,
+  title: row.title,
+  product_group: row.product_group,
+  sales_rank: toInteger(row.sales_rank)
+});
+
+# Load co_purchased.csv
+LOAD CSV WITH HEADERS
+FROM 'file:///co_purchased.csv' AS row
+MATCH (p1:Product {asin: row.product_asin}),
+      (p2:Product {asin: row.similar_asin})
+MERGE (p1)-[:CO_PURCHASED_WITH]->(p2);
+
+# Constraint for Category nodes
+CREATE CONSTRAINT category_name IF NOT EXISTS
+FOR (c:Category)
+REQUIRE c.name IS UNIQUE;
+
+# Load trim_category.csv and create BELONGS_TO relationships
+:auto LOAD CSV WITH HEADERS
+FROM 'file:///trim_category.csv' AS row
+CALL {
+  WITH row
+  MATCH (p:Product {asin: row.product_asin})
+  MERGE (c:Category {name: row.category_name})
+  MERGE (p)-[:BELONGS_TO]->(c)
+} IN TRANSACTIONS OF 1000 ROWS;
