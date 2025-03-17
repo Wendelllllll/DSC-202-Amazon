@@ -24,3 +24,13 @@ dbms.memory.transaction.global_max_size=4g
 dbms.memory.transaction.max_size=4g
 
 dbms.memory.transaction.total.max=4g
+
+
+
+# Recommendation System(combined relational+graph data)
+
+Run the notebook named "recommnedationsystem(1).ipynb"
+
+!!! You need to repalce your PostgreSQL/Neo4j connection username and poassword with you own information.
+
+Run the first two cells to check if your database is connected successfully, then you can test the recommendation system maybe using some more cases.
