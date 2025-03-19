@@ -1,0 +1,259 @@
+import pandas as pd
+from pymongo import MongoClient
+import redis
+import json
+
+### 1️⃣ Connect to MongoDB ###
+try:
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["amazon"]
+    products_collection = db["products"]
+    promoted_collection = db["promoted_products"]
+    print("✅ Connected to MongoDB")
+except Exception as e:
+    print(f"❌ MongoDB connection failed: {e}")
+    exit(1)
+
+### 2️⃣ Connect to Redis ###
+try:
+    r = redis.Redis(host='localhost', port=6379, db=0)
+    r.ping()  # Test connection
+    print("✅ Connected to Redis")
+except Exception as e:
+    print(f"❌ Redis connection failed: {e}")
+    exit(1)
+
+### 3️⃣ File Paths ###
+products_file = "/Users/zhoutianhao/Desktop/amazon_products_for_neo.csv"
+reviews_file = "/Users/zhoutianhao/Desktop/amazon_reviews.csv"
+
+# Read CSV files
+try:
+    products_df = pd.read_csv(products_file)
+    reviews_df = pd.read_csv(reviews_file)
+
+    # Normalize column names to lowercase
+    products_df.columns = products_df.columns.str.strip().str.lower()
+    reviews_df.columns = reviews_df.columns.str.strip().str.lower()
+
+    print("✅ CSV Columns (Products):", products_df.columns)
+    print("✅ CSV Columns (Reviews):", reviews_df.columns)
+except Exception as e:
+    print(f"❌ Error reading CSV files: {e}")
+    exit(1)
+
+### 4️⃣ Process & Convert Data for MongoDB ###
+product_data = {}
+
+# Process product data
+for _, row in products_df.iterrows():
+    asin = str(row["asin"]).strip()
+    product_data[asin] = {
+        "asin": asin,
+        "title": row["title"] if pd.notna(row["title"]) else "Unknown",
+        "category": row["product_group"] if pd.notna(row["product_group"]) else "Unknown",
+        "sales_rank": int(row["sales_rank"]) if pd.notna(row["sales_rank"]) else None,
+        "reviews": []
+    }
+
+# Process review data
+for _, row in reviews_df.iterrows():
+    asin = str(row["asin"]).strip()
+    if asin in product_data:
+        product_data[asin]["reviews"].append({
+            "customer_id": row["customerid"],
+            "review_date": row["reviewdate"],
+            "rating": int(row["rating"]),
+            "votes": int(row["votes"]),
+            "helpfulness": int(row["helpfulness"])
+        })
+
+### 5️⃣ Store Data in MongoDB ###
+try:
+    if products_collection.count_documents({}) > 0:
+        products_collection.drop()  # Clear old data and re-insert
+
+    products_collection.insert_many(product_data.values())
+    print("✅ Data successfully inserted into MongoDB!")
+
+    # Create indexes
+    products_collection.create_index([("asin", 1)])
+    products_collection.create_index([("category", 1)])
+    products_collection.create_index([("sales_rank", 1)])
+    products_collection.create_index([("reviews", 1)])
+    print("✅ MongoDB indexes created!")
+except Exception as e:
+    print(f"❌ MongoDB operation failed: {e}")
+    exit(1)
+
+### 6️⃣ Cache Top-Selling Products in Redis ###
+def cache_top_products(category=None, limit=10):
+    """Store top-selling products in Redis with category filter"""
+    try:
+        pipeline = [{"$match": {"sales_rank": {"$ne": None}}}, {"$sort": {"sales_rank": 1}}, {"$limit": limit}]
+        if category:
+            pipeline.insert(0, {"$match": {"category": category}})
+        top_products = list(products_collection.aggregate(pipeline))
+        for p in top_products:
+            p["_id"] = str(p["_id"])
+        r.set(f"top_products:{category or 'all'}:limit_{limit}", json.dumps(top_products), ex=3600)
+        print("✅ Redis cache updated!")
+    except Exception as e:
+        print(f"❌ Error caching top products: {e}")
+
+cache_top_products()
+
+### 7️⃣ Optimized Queries ###
+
+def get_top_products(category=None, limit=10):
+    """Retrieve top-selling products with optional category filter"""
+    try:
+        pipeline = [{"$match": {"sales_rank": {"$ne": None}}}, {"$sort": {"sales_rank": 1}}, {"$limit": limit}]
+        if category:
+            pipeline.insert(0, {"$match": {"category": category}})
+        cached_key = f"top_products:{category or 'all'}:limit_{limit}"
+        cached_data = r.get(cached_key)
+        if cached_data:
+            print("✅ Retrieved from Redis!")
+            return json.loads(cached_data.decode())
+        print("🔍 Fetching from MongoDB...")
+        top_products = list(products_collection.aggregate(pipeline))
+        for p in top_products:
+            p["_id"] = str(p["_id"])
+        r.set(cached_key, json.dumps(top_products), ex=3600)
+        return top_products
+    except Exception as e:
+        print(f"❌ Error fetching top products: {e}")
+        return []
+
+def get_product_by_asin(asin):
+    """Fetch product by ASIN with frequency tracking"""
+    try:
+        redis_key = f"product:{asin}"
+        freq_key = f"query_freq:{asin}"
+        cached_product = r.get(redis_key)
+        if cached_product:
+            print("✅ Retrieved from Redis")
+            r.incr(freq_key)
+            return json.loads(cached_product.decode())
+        print("🔍 Fetching from MongoDB...")
+        product = products_collection.find_one({"asin": asin})
+        if product:
+            product["_id"] = str(product["_id"])
+            r.set(redis_key, json.dumps(product), ex=3600)
+            r.incr(freq_key)
+            return product
+        return None
+    except Exception as e:
+        print(f"❌ Error fetching product by ASIN: {e}")
+        return None
+
+def pre_cache_popular_products():
+    """Pre-cache products with high query frequency"""
+    try:
+        freq_keys = r.keys("query_freq:*")
+        popular_asins = [(k.decode().split(":")[1], int(r.get(k))) for k in freq_keys]
+        popular_asins.sort(key=lambda x: x[1], reverse=True)
+        for asin, _ in popular_asins[:10]:
+            product = products_collection.find_one({"asin": asin})
+            if product:
+                product["_id"] = str(product["_id"])
+                r.set(f"product:{asin}", json.dumps(product), ex=24*3600)
+        print("✅ Pre-cached popular products!")
+    except Exception as e:
+        print(f"❌ Error pre-caching popular products: {e}")
+
+def get_most_reviewed_products(limit=10):
+    """Fetch products with the most reviews"""
+    try:
+        cached_key = f"most_reviewed:limit_{limit}"
+        cached_data = r.get(cached_key)
+        if cached_data:
+            print("✅ Retrieved from Redis!")
+            return json.loads(cached_data.decode())
+        print("🔍 Fetching from MongoDB...")
+        pipeline = [
+            {"$project": {"asin": 1, "title": 1, "category": 1, "review_count": {"$size": "$reviews"}}},
+            {"$sort": {"review_count": -1}},
+            {"$limit": limit}
+        ]
+        most_reviewed = list(products_collection.aggregate(pipeline))
+        for p in most_reviewed:
+            p["_id"] = str(p["_id"])
+        r.set(cached_key, json.dumps(most_reviewed), ex=3600)
+        return most_reviewed
+    except Exception as e:
+        print(f"❌ Error fetching most-reviewed products: {e}")
+        return []
+
+### 8️⃣ Promoted Products Handling ###
+def add_promoted_product(asin, promotion_reason):
+    """Add a product to the promoted list"""
+    try:
+        product = products_collection.find_one({"asin": asin})
+        if not product:
+            print(f"❌ Product {asin} not found!")
+            return
+        promoted_data = {
+            "asin": asin,
+            "title": product["title"],
+            "reason": promotion_reason,
+            "added_date": "2025-03-18"  # Use datetime.now().isoformat() in production
+        }
+        promoted_collection.update_one({"asin": asin}, {"$set": promoted_data}, upsert=True)
+        r.set(f"promoted:{asin}", json.dumps(promoted_data), ex=7*24*3600)
+        print(f"✅ Promoted product added: {asin}")
+    except Exception as e:
+        print(f"❌ Error adding promoted product: {e}")
+
+def get_promoted_products():
+    """Retrieve all promoted products"""
+    try:
+        cached_data = r.keys("promoted:*")
+        if cached_data:
+            print("✅ Retrieved from Redis!")
+            return [json.loads(r.get(k).decode()) for k in cached_data]
+        print("🔍 Fetching from MongoDB...")
+        promoted = list(promoted_collection.find())
+        for p in promoted:
+            p["_id"] = str(p["_id"])
+            r.set(f"promoted:{p['asin']}", json.dumps(p), ex=7*24*3600)
+        return promoted
+    except Exception as e:
+        print(f"❌ Error fetching promoted products: {e}")
+        return []
+
+### 9️⃣ Run Query Tests ###
+print("\n🔥 [TEST] Fetching Top-Selling Products:")
+top_products = get_top_products()
+for p in top_products:
+    print(f" - {p['title']} (ASIN: {p['asin']})")
+
+print("\n🔥 [TEST] Fetching Top Products (Electronics):")
+top_electronics = get_top_products(category="Electronics")
+for p in top_electronics:
+    print(f" - {p['title']} (ASIN: {p['asin']})")
+
+print("\n🔍 [TEST] Searching for a Single Product:")
+asin_to_search = "0738700797"  # From your previous output
+product = get_product_by_asin(asin_to_search)
+if product:
+    print(f"✅ Found product: {product['title']} ({asin_to_search})")
+else:
+    print(f"❌ ASIN not found: {asin_to_search}")
+
+print("\n🔥 [TEST] Fetching Most-Reviewed Products:")
+most_reviewed = get_most_reviewed_products()
+for p in most_reviewed:
+    print(f" - {p['title']} (ASIN: {p['asin']}, Reviews: {p['review_count']})")
+
+print("\n🔥 [TEST] Adding and Fetching Promoted Products:")
+add_promoted_product("0738700797", "Featured in Spring Sale")
+promoted = get_promoted_products()
+for p in promoted:
+    print(f" - {p['title']} (Reason: {p['reason']})")
+
+print("\n🔥 [TEST] Pre-caching Popular Products:")
+pre_cache_popular_products()
+
+print("\n✅ All tests completed!")
