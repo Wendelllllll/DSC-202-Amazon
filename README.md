@@ -7,7 +7,7 @@ Tianxiang Wang
 
 Tianhao Zhou
 
-Presentation: Final Presentation with Demo.mp4
+Presentation: Presentation_with_Demo.mp4
 
 Powerpoint: Amazon Product Co-Purchasing Analysis.pdf
 
