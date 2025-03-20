@@ -3,7 +3,7 @@ Presentation: Final Presentation with Demo.mp4
 
 Powerpoint: Amazon Product Co-Purchasing Analysis.pdf
 
-Need to download PostgresSQL (datagrip), neo4j, Mongo DB and Redis
+Need to download PostgresSQL (Datagrip), Neo4j, Mongo DB and Redis
 
 # Neo4j Graph Database
 In Relational Database (PostgreSQL). Run "trimming_data_for_neo.sql", export "amazon_products_for_neo.csv", "co_purchased.csv", "trim_category.csv". 
