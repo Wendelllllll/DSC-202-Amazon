@@ -11,8 +11,10 @@ In Relational Database (PostgreSQL). Run "trimming_data_for_neo.sql", export "am
 Inport above three files into Neo4j Graph DBMS. Run the Cypher script "construct_graph_database_in_neo" in Neo4j Browser. 
 
 
-**The default Neo4j memory settings are too small for this dataset. 
-**Example Memory Settings Modification
+!!! The default Neo4j memory settings are too small for this dataset !!!
+
+Example Memory Settings Modification
+
 dbms.memory.heap.initial_size=4g
 
 dbms.memory.heap.max_size=6g
