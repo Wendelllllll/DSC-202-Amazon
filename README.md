@@ -1,5 +1,6 @@
-# DSC-202-Amazon
 
+# DSC-202-Amazon
+Need to download PostgresSQL (datagrip), neo4j, Mongo DB and Redis
 
 # Neo4j Graph Database
 In Relational Database (PostgreSQL). Run "trimming_data_for_neo.sql", export "amazon_products_for_neo.csv", "co_purchased.csv", "trim_category.csv". 
