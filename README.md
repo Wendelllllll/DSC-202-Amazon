@@ -1,4 +1,12 @@
 # DSC-202-Amazon
+List of our group members:
+
+Hao Wang
+
+Tianxiang Wang
+
+Tianhao Zhou
+
 Presentation: Final Presentation with Demo.mp4
 
 Powerpoint: Amazon Product Co-Purchasing Analysis.pdf
