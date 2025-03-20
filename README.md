@@ -11,15 +11,23 @@ Presentation: Presentation_with_Demo.mp4
 
 Powerpoint: Amazon Product Co-Purchasing Analysis.pdf
 
+# Databases setup for Recommendations System 
 Need to download PostgresSQL (Datagrip), Neo4j, Mongo DB and Redis
+The link to our original dataset: [Amazon product co-purchasing network metadata](https://snap.stanford.edu/data/amazon-meta.html)
+
+# PostgresSQL Relational Database
+(optional) Run "Txt_to_csv.ipynb" to parse the original dataset into two importable csv files: "amazon_products.csv" and "amazon_reviews.csv" (result csv files already downloadable in data folder)
+
+Run "import_preprocesing_relational.sql" table schemas part to create "amazon_prodcuts" table and "amazon_reviews" table. Import two csv files from the data folder to corresponding tables: "amazon_products.csv" and "amazon_reviews.csv". Run the rest of "import_preprocesing_relational.sql" in Datagrip for table cleaning and preprocessing.
+
 
 # Neo4j Graph Database
-In Relational Database (PostgreSQL). Run "trimming_data_for_neo.sql", export "amazon_products_for_neo.csv", "co_purchased.csv", "trim_category.csv". 
+(optional) In Relational Database (PostgreSQL). Run "trimming_data_for_neo.sql" to export "amazon_products_for_neo.csv", "co_purchased.csv", "trim_category.csv". (result csv files already downloadable in data folder)
 
-Inport above three files into Neo4j Graph DBMS. Run the Cypher script "construct_graph_database_in_neo" in Neo4j Browser. 
+Inport above three csv files into Neo4j Graph DBMS. Run the Cypher script "construct_graph_database_in_neo" in Neo4j Browser. 
 
 
-!!! The default Neo4j memory settings are too small for this dataset !!!
+!!! The default Neo4j memory settings are too small for this dataset, you might want to add the followings to your DBMS settings !!!
 
 Example Memory Settings Modification
 
@@ -39,7 +47,8 @@ dbms.memory.transaction.max_size=4g
 
 dbms.memory.transaction.total.max=4g
 
-
+# Key-value database
+Download and run Mongo DB and Redis on local environment
 
 # Final Recommendation System
 
@@ -47,4 +56,4 @@ Run the notebook named "Recommendation System with Demo.ipynb" (original environ
 
 !!! You need to repalce your PostgreSQL/Neo4j connection username and password with your own !!!
 
-Run the first cells to check if your database is connected successfully, you can test the recommendation system with the final simple UI with any input.
+Run the first two cells to check if your databases is connected successfully, you can test the recommendation system with the final simple UI with any word input or ASIN.
