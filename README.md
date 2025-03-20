@@ -1,5 +1,6 @@
 # DSC-202-Amazon
 Presentation: Final Presentation with Demo.mp4
+
 Powerpoint: Amazon Product Co-Purchasing Analysis.pdf
 
 Need to download PostgresSQL (datagrip), neo4j, Mongo DB and Redis
