@@ -31,10 +31,10 @@ dbms.memory.transaction.total.max=4g
 
 
 
-# Recommendation System(combined relational+graph data)
+# Final Recommendation System
 
-Run the notebook named "recommnedationsystem(1).ipynb"
+Run the notebook named "Recommendation System with Demo.ipynb" (original environment in Jupyter lab)
 
-!!! You need to repalce your PostgreSQL/Neo4j connection username and poassword with you own information.
+!!! You need to repalce your PostgreSQL/Neo4j connection username and poassword with you own information !!!
 
-Run the first two cells to check if your database is connected successfully, then you can test the recommendation system maybe using some more cases.
+Run the first cells to check if your database is connected successfully, you can test the recommendation system with the final simple UI with any input.
