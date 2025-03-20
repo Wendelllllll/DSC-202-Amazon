@@ -16,7 +16,7 @@ Need to download PostgresSQL (Datagrip), Neo4j, Mongo DB and Redis
 The link to our original dataset: [Amazon product co-purchasing network metadata](https://snap.stanford.edu/data/amazon-meta.html)
 
 # PostgresSQL Relational Database
-(optional) Run "Txt_to_csv.ipynb" to parse the original dataset into two importable csv files: "amazon_products.csv" and "amazon_reviews.csv" (result csv files already downloadable in data folder)
+(optional) Run "Txt_to_csv.ipynb" in python to parse the original dataset into two importable csv files: "amazon_products.csv" and "amazon_reviews.csv" (result csv files already downloadable in data folder)
 
 Run "import_preprocesing_relational.sql" table schemas part to create "amazon_prodcuts" table and "amazon_reviews" table. Import these two csv files from the data folder to corresponding tables: "amazon_products.csv" and "amazon_reviews.csv". Run the rest of "import_preprocesing_relational.sql" in Datagrip for table cleaning and preprocessing.
 
