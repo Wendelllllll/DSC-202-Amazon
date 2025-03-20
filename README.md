@@ -56,4 +56,4 @@ Run the notebook named "Recommendation System with Demo.ipynb" (original environ
 
 !!! You need to repalce your PostgreSQL/Neo4j connection username and password with your own !!!
 
-Run the first two cells to check if your databases is connected successfully, you can test the recommendation system with the final simple UI with any word input or ASIN.
+Run the first two cells to check if your databases is connected successfully, you can test the recommendation system using the last cell's UI with any word or ASIN input.
