@@ -18,7 +18,7 @@ The link to our original dataset: [Amazon product co-purchasing network metadata
 # PostgresSQL Relational Database
 (optional) Run "Txt_to_csv.ipynb" to parse the original dataset into two importable csv files: "amazon_products.csv" and "amazon_reviews.csv" (result csv files already downloadable in data folder)
 
-Run "import_preprocesing_relational.sql" table schemas part to create "amazon_prodcuts" table and "amazon_reviews" table. Import two csv files from the data folder to corresponding tables: "amazon_products.csv" and "amazon_reviews.csv". Run the rest of "import_preprocesing_relational.sql" in Datagrip for table cleaning and preprocessing.
+Run "import_preprocesing_relational.sql" table schemas part to create "amazon_prodcuts" table and "amazon_reviews" table. Import these two csv files from the data folder to corresponding tables: "amazon_products.csv" and "amazon_reviews.csv". Run the rest of "import_preprocesing_relational.sql" in Datagrip for table cleaning and preprocessing.
 
 
 # Neo4j Graph Database
