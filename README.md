@@ -54,6 +54,6 @@ Download and run Mongo DB and Redis on local environment
 
 Run the notebook named "Recommendation System with Demo.ipynb" (original environment in Jupyter lab)
 
-!!! You need to repalce your PostgreSQL/Neo4j connection username and password with your own !!!
+!!! You need to repalce all your PostgreSQL/Neo4j connection information （username，password，database name）with your own !!!
 
 Run the first two cells to check if your databases is connected successfully, you can test the recommendation system using the last cell's UI with any word or ASIN input.
