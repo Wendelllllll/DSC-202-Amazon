@@ -26,6 +26,7 @@ Run "import_preprocesing_relational.sql" table schemas part to create "amazon_pr
 
 Inport above three csv files into Neo4j Graph DBMS. Run the Cypher script "construct_graph_database_in_neo" in Neo4j Browser. 
 
+!!! You will need two plugins in your Neo4j Database: APOC and Graph Data Science Library !!! 
 
 !!! The default Neo4j memory settings are too small for this dataset, you might want to add the followings to your DBMS settings !!!
 
@@ -57,3 +58,16 @@ Run the notebook named "Recommendation System with Demo.ipynb" (original environ
 !!! You need to repalce all your PostgreSQL/Neo4j connection information （username，password，database name）with your own !!!
 
 Run the first two cells to check if your databases is connected successfully, you can test the recommendation system using the last cell's UI with any word or ASIN input.
+
+!!! For Windows system to display the UI, need to download node.js at https://nodejs.org !!!
+
+if the UI still not displaying, try running the followings in your jupyter notebook:
+
+!pip install ipywidgets --upgrade
+
+!jupyter labextension install @jupyter-widgets/jupyterlab-manager
+
+!pip install --upgrade jupyter ipywidgets jupyterlab_widgets jupyter_nbextensions_configurator
+
+
+
