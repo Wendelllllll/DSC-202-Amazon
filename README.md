@@ -12,7 +12,10 @@ Presentation: Presentation_with_Demo.mp4
 Powerpoint: Amazon Product Co-Purchasing Analysis.pdf
 
 # Databases setup for Recommendations System 
-Need to download PostgresSQL (Datagrip), Neo4j, Mongo DB and Redis
+Need to download PostgresSQL (Datagrip), Neo4j, Mongo DB and Redis.
+
+Download Node.js for UI if you are using Windows system.
+
 The link to our original dataset: [Amazon product co-purchasing network metadata](https://snap.stanford.edu/data/amazon-meta.html)
 
 # PostgresSQL Relational Database
