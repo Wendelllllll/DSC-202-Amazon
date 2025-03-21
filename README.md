@@ -7,9 +7,9 @@ Tianxiang Wang
 
 Tianhao Zhou
 
-Presentation: Presentation_with_Demo.mp4
+Presentation: _Presentation_with_Demo.mp4_
 
-Powerpoint: Amazon Product Co-Purchasing Analysis.pdf
+Powerpoint: _Amazon Product Co-Purchasing Analysis.pdf_
 
 # Databases setup for Recommendations System 
 Need to download PostgresSQL (Datagrip), Neo4j, Mongo DB and Redis.
@@ -21,13 +21,13 @@ The link to our original dataset: [Amazon product co-purchasing network metadata
 # PostgresSQL Relational Database
 _(Optional) Run "Txt_to_csv.ipynb" in python to parse the original dataset into two importable csv files: "amazon_products.csv" and "amazon_reviews.csv" (resulting csv files are already downloadable in data folder)_
 
-Run "import_preprocesing_relational.sql" table schemas part to create "amazon_prodcuts" table and "amazon_reviews" table. Import these two csv files from the data folder to corresponding tables: "amazon_products.csv" and "amazon_reviews.csv". Run the rest of "import_preprocesing_relational.sql" in Datagrip for table cleaning and preprocessing.
+Run _"import_preprocesing_relational.sql"_ table schemas part to create _"amazon_prodcuts"_ table and _"amazon_reviews"_ table. Import these two csv files from the data folder to corresponding tables: _"amazon_products.csv"_ and _"amazon_reviews.csv"_. Run the rest of _"import_preprocesing_relational.sql"_ in Datagrip for table cleaning and preprocessing.
 
 
 # Neo4j Graph Database
 _(Optional) In Relational Database (PostgreSQL). Run "trimming_data_for_neo.sql" to export "amazon_products_for_neo.csv", "co_purchased.csv", "trim_category.csv". (resulting csv files are already downloadable in data folder)_
 
-Inport above three csv files into Neo4j Graph DBMS. Run the Cypher script "construct_graph_database_in_neo" in Neo4j Browser. 
+Inport above three csv files into Neo4j Graph DBMS. Run the Cypher script _"construct_graph_database_in_neo"_ in Neo4j Browser. 
 
 
 >!!! You will need two plugins in your Neo4j Database: APOC and Graph Data Science Library !!! 
@@ -58,7 +58,7 @@ Download and run Mongo DB and Redis on local environment
 
 # Final Recommendation System
 
-Run the notebook named "Recommendation System with Demo.ipynb" (original environment in Jupyter lab)
+Run the notebook named _"Recommendation System with Demo.ipynb"_ (original environment in Jupyter lab)
 
 >!!! You need to repalce all your PostgreSQL/Neo4j connection information （username，password，database name）with your own !!!
 
