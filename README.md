@@ -14,7 +14,7 @@ Powerpoint: Amazon Product Co-Purchasing Analysis.pdf
 # Databases setup for Recommendations System 
 Need to download PostgresSQL (Datagrip), Neo4j, Mongo DB and Redis.
 
-Download Node.js for UI if you are using Windows system.
+Original setup in mac.OS system, download Node.js for UI if you are using a Windows system.
 
 The link to our original dataset: [Amazon product co-purchasing network metadata](https://snap.stanford.edu/data/amazon-meta.html)
 
@@ -30,11 +30,11 @@ _(Optional) In Relational Database (PostgreSQL). Run "trimming_data_for_neo.sql"
 Inport above three csv files into Neo4j Graph DBMS. Run the Cypher script "construct_graph_database_in_neo" in Neo4j Browser. 
 
 
-!!! You will need two plugins in your Neo4j Database: APOC and Graph Data Science Library !!! 
+>!!! You will need two plugins in your Neo4j Database: APOC and Graph Data Science Library !!! 
 
-!!! The default Neo4j memory settings are too small for this dataset, you might want to add the followings to your DBMS settings !!!
+>!!! The default Neo4j memory settings are too small for this dataset, you might want to add the followings to your DBMS settings !!!
 
-Example Memory Settings Modification
+>Example Memory Settings Modification
 ```diff
 dbms.memory.heap.initial_size=4g
 
@@ -60,20 +60,22 @@ Download and run Mongo DB and Redis on local environment
 
 Run the notebook named "Recommendation System with Demo.ipynb" (original environment in Jupyter lab)
 
-!!! You need to repalce all your PostgreSQL/Neo4j connection information （username，password，database name）with your own !!!
+>!!! You need to repalce all your PostgreSQL/Neo4j connection information （username，password，database name）with your own !!!
 
 Run the first two cells to check if your databases is connected successfully, you can test the recommendation system using the last cell's UI with any word or ASIN input.
 
-!!! For Windows system to display the UI, need to download node.js at https://nodejs.org !!!
+>!!! For Windows system to display the UI, need to download node.js at https://nodejs.org !!!
 
-if the UI still not displaying, try running the followings in your jupyter notebook:
+>if the UI still not displaying, try running the following code in your jupyter notebook:
 
 ```diff
+
 !pip install ipywidgets --upgrade
 
 !jupyter labextension install @jupyter-widgets/jupyterlab-manager
 
 !pip install --upgrade jupyter ipywidgets jupyterlab_widgets jupyter_nbextensions_configurator
+
 ```
 
 
