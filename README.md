@@ -11,6 +11,8 @@ Presentation: _Presentation_with_Demo.mp4_
 
 Powerpoint: _Amazon Product Co-Purchasing Analysis.pdf_
 
+Final Report: _DSC202_Final_Report.pdf_
+
 # Databases setup for Recommendations System 
 Need to download PostgresSQL (Datagrip), Neo4j, Mongo DB and Redis.
 
